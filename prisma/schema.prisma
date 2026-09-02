@@ -1,0 +1,103 @@
+// Nomadia Prisma schema — PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String?
+  name         String
+  googleId     String?   @unique
+  image        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings Booking[]
+
+  @@map("users")
+}
+
+model Destination {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  country     String
+  region      String
+  category    String
+  description String
+  image       String
+  rating      Float    @default(0)
+  travelers   String
+
+  @@map("destinations")
+}
+
+model Hotel {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  country     String
+  description String
+  image       String
+  price       Int
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  category    String
+  amenities   String[]
+
+  @@map("hotels")
+}
+
+model Tour {
+  id          String   @id @default(uuid())
+  title       String
+  location    String
+  country     String
+  category    String
+  description String
+  image       String
+  price       Int
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  duration    String
+
+  @@map("tours")
+}
+
+model Booking {
+  id               String   @id @default(uuid())
+  reference        String   @unique
+  destination      String
+  country          String
+  hotel            String
+  checkIn          String
+  checkOut         String
+  guests           Int
+  nights           Int
+  price            Int
+  status           String   @default("Confirmed")
+  image            String
+  category         String?
+  itemId           String?
+  travellerFirstName String
+  travellerLastName  String
+  travellerEmail     String
+  travellerPhone     String
+  paymentMethod    String
+  paymentLast4     String
+  paymentTotal     Int
+  created          DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@map("bookings")
+}
